@@ -36,4 +36,5 @@ FORMS += \
         oneton.ui
 
 DISTFILES += \
-    CHANGELOG.md
+    CHANGELOG.md \
+    README.md
