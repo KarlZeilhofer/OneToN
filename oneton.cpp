@@ -3,6 +3,7 @@
 #include "math.h"
 
 #include <QGridLayout>
+#include <QSettings>
 
 OneToN* OneToN::app = 0;
 
@@ -12,16 +13,20 @@ OneToN::OneToN(QWidget *parent) :
 {
     ui->setupUi(this);
     app = this;
+    scoreLabel = new QLabel(this);
 
-    timerNewGame = new QTimer(this);
+    ui->statusBar->addWidget(scoreLabel);
+
+    timerNewRound = new QTimer(this);
     timerPreviewTiles = new QTimer(this);
     timerObscure = new QTimer(this);
+    secondsTick = new QTimer(this);
 
 
     QGridLayout* grid = new QGridLayout;
 
-    for(int y=0; y<6; y++){
-        for(int x=0; x<6; x++){
+    for(int y=0; y<N; y++){
+        for(int x=0; x<N; x++){
             if(x == 0){
                 tiles.append(new QList<Tile*>);
             }
@@ -37,8 +42,8 @@ OneToN::OneToN(QWidget *parent) :
     setCentralWidget(w);
     srand(time(0));
 
-    timerNewGame->setSingleShot(true);
-    connect(timerNewGame, SIGNAL(timeout()), this, SLOT(newGame()));
+    timerNewRound->setSingleShot(true);
+    connect(timerNewRound, SIGNAL(timeout()), this, SLOT(newRound()));
 
     timerPreviewTiles->setSingleShot(true);
     connect(timerPreviewTiles, SIGNAL(timeout()), this, SLOT(previewTiles()));
@@ -46,9 +51,15 @@ OneToN::OneToN(QWidget *parent) :
     timerObscure->setSingleShot(true);
     connect(timerObscure, SIGNAL(timeout()), this, SLOT(obscureTiles()));
 
-    count = 2;
+    secondsTick->start(1000);
+    connect(secondsTick, SIGNAL(timeout()), this, SLOT(incrementGameTime()));
 
-    newGame();
+    level = 2;
+    QSettings set;
+    highScore = set.value("highScore").toInt();
+
+    updateScore();
+    newRound();
 }
 
 OneToN::~OneToN()
@@ -58,12 +69,12 @@ OneToN::~OneToN()
 
 
 
-void OneToN::newGame()
+void OneToN::newRound()
 {
     counter = 1;
 
-    for(int y=0; y<6; y++){
-        for(int x=0; x<6; x++){
+    for(int y=0; y<N; y++){
+        for(int x=0; x<N; x++){
             Tile* t = tiles.at(y)->at(x);
             t->state = Tile::Hidden;
             t->number = 0;
@@ -72,14 +83,14 @@ void OneToN::newGame()
     }
 
     QList<int> list;
-    for(int i=0; i<6*6; i++){
+    for(int i=0; i<N*N; i++){
         list.append(i);
     }
 
-    for(int i=0; i<count; i++){
+    for(int i=0; i<level; i++){
         int ii = rand() % list.size();
         int x = list.at(ii);
-        Tile* t = tiles.at(x/6)->at(x%6);
+        Tile* t = tiles.at(x/N)->at(x%N);
         t->state = Tile::Placed;
         t->number = i+1;
         t->update();
@@ -87,12 +98,14 @@ void OneToN::newGame()
     }
 
     timerPreviewTiles->start(2000);
+    levelShown = level;
+    updateScore();
 }
 
 void OneToN::previewTiles()
 {
-    for(int y=0; y<6; y++){
-        for(int x=0; x<6; x++){
+    for(int y=0; y<N; y++){
+        for(int x=0; x<N; x++){
             Tile* t = tiles.at(y)->at(x);
             if(t->state == Tile::Placed){
                 t->state = Tile::Preview;
@@ -101,14 +114,14 @@ void OneToN::previewTiles()
         }
     }
 
-    int ms = 1200*count*count/36;
+    int ms = 1200*level*level/36;
     timerObscure->start(1000>ms?1000:ms);
 }
 
 void OneToN::obscureTiles()
 {
-    for(int y=0; y<6; y++){
-        for(int x=0; x<6; x++){
+    for(int y=0; y<N; y++){
+        for(int x=0; x<N; x++){
             Tile* t = tiles.at(y)->at(x);
             if(t->state == Tile::Preview){
                 t->state = Tile::Obscured;
@@ -116,4 +129,66 @@ void OneToN::obscureTiles()
             }
         }
     }
+}
+
+void OneToN::correct()
+{
+    if(level > topLevel){
+        totalScore += 10;
+    }
+
+    counter++;
+    if(counter > level){
+        topLevel = level;
+        level++;
+        timerNewRound->start(2000);
+        wrongCounter=0;
+        fixedScore = totalScore;
+    }
+    updateScore();
+}
+
+void OneToN::wrong()
+{
+    totalWrongCounter += level-counter;
+
+    timerNewRound->start(4000);
+    counter = 0;
+
+    wrongCounter++;
+    if(wrongCounter >=3 && level > 2){
+        level--;
+        wrongCounter=0;
+    }
+
+    totalScore = fixedScore; // reset internal counter to fixedScore
+    updateScore();
+}
+
+void OneToN::updateScore()
+{
+    double ratio;
+    if(totalCorrectCounter+totalWrongCounter == 0){
+        ratio = 0;
+    }else{
+        ratio = 100 * totalCorrectCounter/float(totalCorrectCounter+totalWrongCounter);
+    }
+
+    if(totalScore > myHighScore){
+        myHighScore = totalScore;
+        if(myHighScore > highScore){
+            highScore = myHighScore;
+            QSettings set;
+            set.setValue("highScore", highScore);
+        }
+    }
+
+    this->scoreLabel->setText(QString("Level %1, %2 Punkte, Highscore: %3      %4").
+                              arg(levelShown).arg(myHighScore).arg(highScore).arg(gameTime/60 + (gameTime%60)/100.0, 0, 'f', 2));
+}
+
+void OneToN::incrementGameTime()
+{
+    gameTime++;
+    updateScore();
 }

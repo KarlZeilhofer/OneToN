@@ -34,3 +34,6 @@ HEADERS += \
 
 FORMS += \
         oneton.ui
+
+DISTFILES += \
+    CHANGELOG.md

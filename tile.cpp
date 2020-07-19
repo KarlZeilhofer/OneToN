@@ -60,15 +60,10 @@ void Tile::mousePressEvent(QMouseEvent *event)
     if(state == Obscured && app->counter > 0){
         if(app->counter == number){
             state = CheckedCorrect;
-            app->counter++;
-            if(app->counter > app -> count){
-                app->count++;
-                app->timerNewGame->start(2000);
-            }
+            app->correct();
         }else{
             state = CheckedWrong;
-            app->timerNewGame->start(4000);
-            app->counter = 0;
+            app->wrong();
         }
     }
     update();
