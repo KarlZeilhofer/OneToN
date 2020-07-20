@@ -20,9 +20,27 @@
      <x>0</x>
      <y>0</y>
      <width>571</width>
-     <height>27</height>
+     <height>26</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuGame_Mode">
+    <property name="title">
+     <string>Mode</string>
+    </property>
+    <addaction name="actionModeIntro"/>
+    <addaction name="actionModeTraining"/>
+    <addaction name="actionModeChallange"/>
+   </widget>
+   <widget class="QMenu" name="menuGame">
+    <property name="title">
+     <string>Game</string>
+    </property>
+    <addaction name="actionNew_Game"/>
+    <addaction name="actionNew_Round"/>
+    <addaction name="actionPause"/>
+   </widget>
+   <addaction name="menuGame"/>
+   <addaction name="menuGame_Mode"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -33,6 +51,48 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionModeIntro">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Intro - Any Order</string>
+   </property>
+  </action>
+  <action name="actionModeTraining">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Training - Take Your Time</string>
+   </property>
+  </action>
+  <action name="actionModeChallange">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Challange - Speed is Crucial</string>
+   </property>
+  </action>
+  <action name="actionNew_Game">
+   <property name="text">
+    <string>New Game</string>
+   </property>
+  </action>
+  <action name="actionNew_Round">
+   <property name="text">
+    <string>New Round</string>
+   </property>
+  </action>
+  <action name="actionPause">
+   <property name="text">
+    <string>Pause</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

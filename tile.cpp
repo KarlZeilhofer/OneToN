@@ -57,14 +57,42 @@ void Tile::paintEvent(QPaintEvent *event)
 void Tile::mousePressEvent(QMouseEvent *event)
 {
     OneToN* app = OneToN::app;
-    if(state == Obscured && app->counter > 0){
-        if(app->counter == number){
-            state = CheckedCorrect;
-            app->correct();
-        }else{
-            state = CheckedWrong;
-            app->wrong();
+
+    switch(app->mode){
+    case OneToN::ModeIntro:
+        if(app->state == OneToN::StateWait){
+            if(number > 0){
+                app->floodWithTiles();
+                state = Hidden;
+                app->state = OneToN::StateGo;
+                app->correct();
+            }
         }
+        else if(app->state == OneToN::StateGo){
+            if(number > 0){ // hit a number
+                state = Hidden;
+                app->correct();
+            }else{ // error
+                app->wrong();
+            }
+        }
+
+        break;
+    case OneToN::ModeTraining:
+        break;
+    case OneToN::ModeChallange:
+        if(state == Obscured && app->counter > 0){
+            if(app->counter == number){
+                state = CheckedCorrect;
+                app->correct();
+            }else{
+                state = CheckedWrong;
+                app->wrong();
+            }
+        }
+        break;
     }
+
+
     update();
 }

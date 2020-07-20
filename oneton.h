@@ -25,9 +25,12 @@ public:
     int levelShown = 2;
 
 public slots:
+    void newGame();
     void newRound();
+    void hideTiles();
     void previewTiles();
     void obscureTiles();
+    void floodWithTiles();
 
     void correct();
     void wrong();
@@ -52,7 +55,8 @@ private:
     int topLevel=0; // top completed level
 
     int gameTime=0;
-    int N=4; // game board size NxN
+    int Nx=8; // game board size NxN
+    int Ny=5;
 
 public:
     QTimer* timerNewRound;
@@ -60,6 +64,17 @@ public:
     QTimer* timerObscure;
     QLabel* scoreLabel;
     QTimer* secondsTick;
+
+    enum GameMode{ModeIntro, ModeTraining, ModeChallange};
+    GameMode mode;
+
+    enum GameState{StateWait, StateGo, StateSuccess, StateFailed};
+    GameState state;
+
+private slots:
+    void on_actionModeIntro_triggered();
+    void on_actionModeTraining_triggered();
+    void on_actionModeChallange_triggered();
 };
 
 #endif // ONETON_H

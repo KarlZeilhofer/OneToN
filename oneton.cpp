@@ -22,11 +22,19 @@ OneToN::OneToN(QWidget *parent) :
     timerObscure = new QTimer(this);
     secondsTick = new QTimer(this);
 
+    mode = ModeChallange;
+
+    QActionGroup* ag = new QActionGroup(this);
+    ag->addAction(ui->actionModeIntro);
+    ag->addAction(ui->actionModeTraining);
+    ag->addAction(ui->actionModeChallange);
+
+
 
     QGridLayout* grid = new QGridLayout;
 
-    for(int y=0; y<N; y++){
-        for(int x=0; x<N; x++){
+    for(int y=0; y<Ny; y++){
+        for(int x=0; x<Nx; x++){
             if(x == 0){
                 tiles.append(new QList<Tile*>);
             }
@@ -54,12 +62,11 @@ OneToN::OneToN(QWidget *parent) :
     secondsTick->start(1000);
     connect(secondsTick, SIGNAL(timeout()), this, SLOT(incrementGameTime()));
 
-    level = 2;
+
     QSettings set;
     highScore = set.value("highScore").toInt();
 
-    updateScore();
-    newRound();
+    newGame();
 }
 
 OneToN::~OneToN()
@@ -67,45 +74,80 @@ OneToN::~OneToN()
     delete ui;
 }
 
+void OneToN::newGame()
+{
+    timerNewRound->stop();
+    timerObscure->stop();
+    timerPreviewTiles->stop();
+
+    myHighScore = 0;
+    totalScore = 0;
+    fixedScore = 0;
+    topLevel = 0;
+    level = 2;
+
+    updateScore();
+    newRound();
+}
+
 
 
 void OneToN::newRound()
 {
     counter = 1;
+    state = StateWait;
 
-    for(int y=0; y<N; y++){
-        for(int x=0; x<N; x++){
-            Tile* t = tiles.at(y)->at(x);
-            t->state = Tile::Hidden;
-            t->number = 0;
-            t->update();
-        }
-    }
+    hideTiles();
 
     QList<int> list;
-    for(int i=0; i<N*N; i++){
+    for(int i=0; i<Nx*Ny; i++){
         list.append(i);
     }
 
     for(int i=0; i<level; i++){
         int ii = rand() % list.size();
-        int x = list.at(ii);
-        Tile* t = tiles.at(x/N)->at(x%N);
+        int k = list.at(ii);
+        Tile* t = tiles.at(k/Nx)->at(k%Nx);
         t->state = Tile::Placed;
         t->number = i+1;
         t->update();
         list.removeAt(ii);
     }
 
-    timerPreviewTiles->start(2000);
     levelShown = level;
     updateScore();
+
+    switch (mode) {
+    case OneToN::ModeIntro:
+        previewTiles();
+        break;
+    case OneToN::ModeTraining:
+        break;
+    case OneToN::ModeChallange:
+        timerPreviewTiles->start(2000);
+        break;
+
+    }
+
+
+}
+
+void OneToN::hideTiles()
+{
+    for(int y=0; y<Ny; y++){
+        for(int x=0; x<Nx; x++){
+            Tile* t = tiles.at(y)->at(x);
+            t->state = Tile::Hidden;
+            t->number = 0;
+            t->update();
+        }
+    }
 }
 
 void OneToN::previewTiles()
 {
-    for(int y=0; y<N; y++){
-        for(int x=0; x<N; x++){
+    for(int y=0; y<Ny; y++){
+        for(int x=0; x<Nx; x++){
             Tile* t = tiles.at(y)->at(x);
             if(t->state == Tile::Placed){
                 t->state = Tile::Preview;
@@ -114,14 +156,27 @@ void OneToN::previewTiles()
         }
     }
 
-    int ms = 1200*level*level/36;
-    timerObscure->start(1000>ms?1000:ms);
+    switch(mode){
+    case ModeIntro:
+        // wait until any number-tile is clicked
+        // then flood with obscured tiles
+    break;
+    case ModeTraining:
+        // wait until tile one is clicked
+        // then obscure all number-tiles
+    break;
+    case ModeChallange:
+        int ms = 1200*level*level/36;
+        timerObscure->start(1000>ms?1000:ms);
+    break;
+    }
+
 }
 
 void OneToN::obscureTiles()
 {
-    for(int y=0; y<N; y++){
-        for(int x=0; x<N; x++){
+    for(int y=0; y<Ny; y++){
+        for(int x=0; x<Nx; x++){
             Tile* t = tiles.at(y)->at(x);
             if(t->state == Tile::Preview){
                 t->state = Tile::Obscured;
@@ -131,37 +186,71 @@ void OneToN::obscureTiles()
     }
 }
 
+void OneToN::floodWithTiles()
+{
+    for(int y=0; y<Ny; y++){
+        for(int x=0; x<Nx; x++){
+            Tile* t = tiles.at(y)->at(x);
+            t->state = Tile::Obscured;
+            t->update();
+        }
+    }
+}
+
 void OneToN::correct()
 {
-    if(level > topLevel){
-        totalScore += 10;
+    switch(mode){
+    case OneToN::ModeTraining:
+        break;
+
+    case OneToN::ModeIntro:
+    case OneToN::ModeChallange:
+        if(level > topLevel){
+            totalScore += 10;
+        }
+
+        counter++;
+        if(counter > level){
+            topLevel = level;
+            level++;
+            timerNewRound->start(2000);
+            wrongCounter=0;
+            fixedScore = totalScore;
+            state = StateWait;
+        }
+        break;
     }
 
-    counter++;
-    if(counter > level){
-        topLevel = level;
-        level++;
-        timerNewRound->start(2000);
-        wrongCounter=0;
-        fixedScore = totalScore;
-    }
     updateScore();
 }
 
 void OneToN::wrong()
 {
-    totalWrongCounter += level-counter;
+    // TODO: sound!!!
+    switch(mode){
+    case OneToN::ModeIntro:
+        hideTiles();
+        counter = 0;
+        timerNewRound->start(1000);
+        totalScore = fixedScore; // reset internal counter to fixedScore
+        break;
+    case OneToN::ModeTraining:
+        break;
+    case OneToN::ModeChallange:
+        totalWrongCounter += level-counter;
 
-    timerNewRound->start(4000);
-    counter = 0;
+        timerNewRound->start(4000);
+        counter = 0;
 
-    wrongCounter++;
-    if(wrongCounter >=3 && level > 2){
-        level--;
-        wrongCounter=0;
+        wrongCounter++;
+        if(wrongCounter >=3 && level > 2){
+            level--;
+            wrongCounter=0;
+        }
+
+        totalScore = fixedScore; // reset internal counter to fixedScore
+        break;
     }
-
-    totalScore = fixedScore; // reset internal counter to fixedScore
     updateScore();
 }
 
@@ -191,4 +280,22 @@ void OneToN::incrementGameTime()
 {
     gameTime++;
     updateScore();
+}
+
+void OneToN::on_actionModeIntro_triggered()
+{
+    mode = ModeIntro;
+    newGame();
+}
+
+void OneToN::on_actionModeTraining_triggered()
+{
+    mode = ModeTraining;
+    newGame();
+}
+
+void OneToN::on_actionModeChallange_triggered()
+{
+    mode = ModeChallange;
+    newGame();
 }
