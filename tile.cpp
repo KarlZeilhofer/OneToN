@@ -35,12 +35,12 @@ void Tile::paintEvent(QPaintEvent *event)
         break;
     case Tile::CheckedCorrect:
         penFrame = QPen(Qt::black);
-        brushFrame = QBrush(Qt::green);
+        brushFrame = QBrush(QColor(0x91f0b8)); // green
         penText = QPen(Qt::black);
         break;
     case Tile::CheckedWrong:
         penFrame = QPen(Qt::black);
-        brushFrame = QBrush(Qt::red);
+        brushFrame = QBrush(QColor(0xee8585)); // red
         penText = QPen(Qt::black);
         break;
     }
@@ -57,14 +57,65 @@ void Tile::paintEvent(QPaintEvent *event)
 void Tile::mousePressEvent(QMouseEvent *event)
 {
     OneToN* app = OneToN::app;
-    if(state == Obscured && app->counter > 0){
-        if(app->counter == number){
-            state = CheckedCorrect;
-            app->correct();
-        }else{
-            state = CheckedWrong;
-            app->wrong();
+
+    switch(app->mode){
+    case OneToN::ModeIntro:
+        if(app->state == OneToN::StateWait){
+            if(number > 0){
+                app->floodWithTiles();
+                state = Hidden;
+                app->state = OneToN::StateGo;
+                app->correct();
+            }
         }
+        else if(app->state == OneToN::StateGo){
+            if(number > 0){ // hit a number
+                state = Hidden;
+                app->correct();
+            }else{ // error
+                app->wrong();
+            }
+        }
+
+        break;
+    case OneToN::ModeTraining:
+        if(app->state == OneToN::StateWait){
+            if(number == 1){
+                app->obscureTiles();
+                state = CheckedCorrect;
+                app->state = OneToN::StateGo;
+                app->correct();
+            }else{
+                state = CheckedWrong;
+                app->wrong();
+            }
+        }
+        else if(app->state == OneToN::StateGo){
+            if(state == Obscured){
+                if(app->counter == number){
+                    state = CheckedCorrect;
+                    app->correct();
+                }else{
+                    state = CheckedWrong;
+                    app->wrong();
+                }
+            }
+        }
+
+        break;
+    case OneToN::ModeChallange:
+        if(state == Obscured && app->counter > 0){
+            if(app->counter == number){
+                state = CheckedCorrect;
+                app->correct();
+            }else{
+                state = CheckedWrong;
+                app->wrong();
+            }
+        }
+        break;
     }
+
+
     update();
 }
