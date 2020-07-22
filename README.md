@@ -9,32 +9,34 @@ Here is a full documentary from Vsauce: https://www.youtube.com/watch?v=ktkjUjcZ
 Written with Qt 5.12, tested on Linux Mint 20.0
 
 # Gameplay
+## General
+* If you get all right for 3 rounds in a row, you enter the next level, with one extra tile.
+* If you failed 3 times in a level, you drop to the previous level.
+
 ## Into Mode
-* show numbers
-* take your time
+* numbers are shown
+* take your time to remember their positions (order doesn't matter)
+![Preview for Level 10](screenshots/intro-preview.png)
 * click on any number
 * boxes show up all over the screen obscuring the numbers
+![Preview for Level 10](screenshots/intro-covered.png)
 * you have to find all numbers without mistakes
-* order doesn't matter
-* amount of numbers is increased according to your performance
+![Preview for Level 10](screenshots/intro-5-of-6.png)
+
 
 ## Training Mode
-* show numbers until number `1` is clicked
-* hide the numbers behind boxes
-* click on the boxes in the correct order
-* boxes disapear on a click without showing the number
+* numbers are shown
+* remember them, take your time
+![Preview for Level 10](screenshots/preview.png)
+* click on number `1`
+* now the other numbers get hidden
+* click on the tiles in the correct order
+![Preview for Level 10](screenshots/success.png)
+![Failed, didn't remember number 7!](screenshots/failed.png)
 
 ## Challange Mode
-Tiles with numbers are shown for a very short time.
-![Preview for Level 10](screenshot-10-preview.png)
+Like Training Mode, but tiles with are shown only for a very short time (increasing with O(n²) ).
 
-Try to remember theire positions. When the numbers are hidden, click
-on the white tiles starting from 1, counting upwards.
-
-If you get all right, you enter the next level, with one extra tile.
-
-If you failed 3 times in a row, you drop to the previous level.
-![Failed, didn't remember number 7!](screenshot-10-failed.png)
 
 # TODO
 ## Ayumu Challange Mode - Pro
@@ -66,9 +68,11 @@ make
 Public Domain
 
 ## Sounds
-success.wav: This sound is licensed under the Attribution Noncommercial License.
-https://freesound.org/people/Mrthenoronha/sounds/519630/
-fail.wav: This work is licensed under the Creative Commons 0 License.
-https://freesound.org/people/OwlStorm/sounds/404743/
-click.wav: This work is licensed under the Creative Commons 0 License.
-https://freesound.org/people/waveplay./sounds/399934/
+* success.wav: This sound is licensed under the Attribution Noncommercial License.  
+  https://freesound.org/people/Mrthenoronha/sounds/519630/  
+* fail.wav: This work is licensed under the Creative Commons 0 License.  
+  https://freesound.org/people/OwlStorm/sounds/404743/  
+* click.wav: This work is licensed under the Creative Commons 0 License.  
+  https://freesound.org/people/waveplay./sounds/399934/
+
+

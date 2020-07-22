@@ -102,6 +102,7 @@ void OneToN::newGame()
 
     wrongCounter=0;
     correctCounter=0;
+    gameTime = 0;
 
     updateScore();
     newRound();
