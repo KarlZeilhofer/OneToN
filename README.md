@@ -71,7 +71,7 @@ sudo apt install qt5-doc qt5-doc-html qtcreator
 
 
 # License
-Public Domain
+MIT
 
 ## Sounds
 * success.wav: This sound is licensed under the Attribution Noncommercial License.  
