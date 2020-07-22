@@ -82,10 +82,16 @@
    <property name="text">
     <string>New Game</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
   </action>
   <action name="actionNew_Round">
    <property name="text">
     <string>New Round</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
   <action name="actionPause">

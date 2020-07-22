@@ -65,3 +65,11 @@ make
 
 # License
 Public Domain
+
+## Sounds
+success.wav: This sound is licensed under the Attribution Noncommercial License.
+https://freesound.org/people/Mrthenoronha/sounds/519630/
+fail.wav: This work is licensed under the Creative Commons 0 License.
+https://freesound.org/people/OwlStorm/sounds/404743/
+click.wav: This work is licensed under the Creative Commons 0 License.
+https://freesound.org/people/waveplay./sounds/399934/

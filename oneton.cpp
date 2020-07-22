@@ -4,6 +4,7 @@
 
 #include <QGridLayout>
 #include <QSettings>
+#include <QtMultimedia/QSound>
 
 OneToN* OneToN::app = 0;
 
@@ -62,11 +63,12 @@ OneToN::OneToN(QWidget *parent) :
     secondsTick->start(1000);
     connect(secondsTick, SIGNAL(timeout()), this, SLOT(incrementGameTime()));
 
-
     QSettings set;
     highScore = set.value("highScore").toInt();
+    mode = GameMode(set.value("mode").toInt());
 
     newGame();
+    showMaximized();
 }
 
 OneToN::~OneToN()
@@ -122,11 +124,11 @@ void OneToN::newRound()
         previewTiles();
         break;
     case OneToN::ModeTraining:
+        previewTiles();
         break;
     case OneToN::ModeChallange:
         timerPreviewTiles->start(2000);
         break;
-
     }
 
 
@@ -197,12 +199,11 @@ void OneToN::floodWithTiles()
     }
 }
 
+/// correct tile clicked
 void OneToN::correct()
 {
     switch(mode){
     case OneToN::ModeTraining:
-        break;
-
     case OneToN::ModeIntro:
     case OneToN::ModeChallange:
         if(level > topLevel){
@@ -210,13 +211,17 @@ void OneToN::correct()
         }
 
         counter++;
-        if(counter > level){
+        QSound::play(":/sounds/click.wav");
+        if(counter > level){ // if clicked all numbers in this round
+            QSound::play(":/sounds/success.wav");
             topLevel = level;
             level++;
             timerNewRound->start(2000);
             wrongCounter=0;
             fixedScore = totalScore;
             state = StateWait;
+        }else{
+
         }
         break;
     }
@@ -224,8 +229,11 @@ void OneToN::correct()
     updateScore();
 }
 
+/// wrong tile clicked
 void OneToN::wrong()
 {
+    state = StateFailed;
+    QSound::play(":/sounds/fail.wav");
     // TODO: sound!!!
     switch(mode){
     case OneToN::ModeIntro:
@@ -235,7 +243,6 @@ void OneToN::wrong()
         totalScore = fixedScore; // reset internal counter to fixedScore
         break;
     case OneToN::ModeTraining:
-        break;
     case OneToN::ModeChallange:
         totalWrongCounter += level-counter;
 
@@ -285,17 +292,36 @@ void OneToN::incrementGameTime()
 void OneToN::on_actionModeIntro_triggered()
 {
     mode = ModeIntro;
+    saveMode();
     newGame();
 }
 
 void OneToN::on_actionModeTraining_triggered()
 {
     mode = ModeTraining;
+    saveMode();
     newGame();
 }
 
 void OneToN::on_actionModeChallange_triggered()
 {
     mode = ModeChallange;
+    saveMode();
     newGame();
+}
+
+void OneToN::on_actionNew_Game_triggered()
+{
+    newGame();
+}
+
+void OneToN::on_actionNew_Round_triggered()
+{
+    newRound();
+}
+
+void OneToN::saveMode()
+{
+    QSettings set;
+    set.setValue("mode", int(mode));
 }

@@ -75,6 +75,9 @@ private slots:
     void on_actionModeIntro_triggered();
     void on_actionModeTraining_triggered();
     void on_actionModeChallange_triggered();
+    void on_actionNew_Game_triggered();
+    void on_actionNew_Round_triggered();
+    void saveMode();
 };
 
 #endif // ONETON_H

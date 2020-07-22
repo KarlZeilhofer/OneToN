@@ -35,12 +35,12 @@ void Tile::paintEvent(QPaintEvent *event)
         break;
     case Tile::CheckedCorrect:
         penFrame = QPen(Qt::black);
-        brushFrame = QBrush(Qt::green);
+        brushFrame = QBrush(QColor(0x91f0b8)); // green
         penText = QPen(Qt::black);
         break;
     case Tile::CheckedWrong:
         penFrame = QPen(Qt::black);
-        brushFrame = QBrush(Qt::red);
+        brushFrame = QBrush(QColor(0xee8585)); // red
         penText = QPen(Qt::black);
         break;
     }
@@ -79,6 +79,29 @@ void Tile::mousePressEvent(QMouseEvent *event)
 
         break;
     case OneToN::ModeTraining:
+        if(app->state == OneToN::StateWait){
+            if(number == 1){
+                app->obscureTiles();
+                state = CheckedCorrect;
+                app->state = OneToN::StateGo;
+                app->correct();
+            }else{
+                state = CheckedWrong;
+                app->wrong();
+            }
+        }
+        else if(app->state == OneToN::StateGo){
+            if(state == Obscured){
+                if(app->counter == number){
+                    state = CheckedCorrect;
+                    app->correct();
+                }else{
+                    state = CheckedWrong;
+                    app->wrong();
+                }
+            }
+        }
+
         break;
     case OneToN::ModeChallange:
         if(state == Obscured && app->counter > 0){
