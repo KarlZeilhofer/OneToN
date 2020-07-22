@@ -54,13 +54,19 @@ Build a machine with USB connection, which dispenses small amounts of some tasty
 Currently all modes are treated the same regarding score counting.
 
 
-# Compile Instructions
+# Build Instructions
+On Debian based systems:
 ```
+sudo apt install build-essential clang-8 qt5-default git qtmultimedia5-dev
 git clone https://github.com/KarlZeilhofer/OneToN
 mkdir build
 cd build
 qmake ../OneToN
 make
+```
+Optionally I would recommend Qt Creator as the C++ IDE:
+```
+sudo apt install qt5-doc qt5-doc-html qtcreator
 ```
 
 
