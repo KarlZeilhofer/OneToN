@@ -29,7 +29,7 @@ void Tile::paintEvent(QPaintEvent *event)
         break;
     case Tile::Obscured:
     case Tile::Placed:
-        penFrame = QPen(Qt::black);
+        penFrame = QPen(Qt::darkGray);
         brushFrame = QBrush(Qt::white);
         penText = QPen(Qt::transparent);
         break;
@@ -44,10 +44,13 @@ void Tile::paintEvent(QPaintEvent *event)
         penText = QPen(Qt::black);
         break;
     }
+    int th = rect().width()*0.02; // pen thicknes
+    penFrame.setWidthF(th);
 
     p.setPen(penFrame);
     p.setBrush(brushFrame);
-    p.drawRect(QRect(rect().x(), rect().y(), rect().width()-1, rect().height()-1) );
+    int round = rect().width()*0.15;
+    p.drawRoundRect(QRect(rect().x()+th, rect().y()+th, rect().width()-2*th, rect().height()-2*th), round, round);
 
     p.setPen(penText);
     p.setFont(QFont("Arial", int(rect().height()*0.7), 1));
