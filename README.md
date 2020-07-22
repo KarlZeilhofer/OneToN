@@ -13,7 +13,7 @@ Written with Qt 5.12, tested on Linux Mint 20.0
 * If you get all right for 3 rounds in a row, you enter the next level, with one extra tile.
 * If you failed 3 times in a level, you drop to the previous level.
 
-## Into Mode
+## Intro Mode
 * numbers are shown
 * take your time to remember their positions (order doesn't matter)
 ![Preview for Level 10](screenshots/intro-preview.png)
