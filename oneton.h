@@ -43,7 +43,8 @@ public slots:
 private:
     Ui::OneToN *ui;
     QList< QList<Tile*>* > tiles;
-    int wrongCounter = 0; // reduce count after 3 lost games
+    int wrongCounter = 0; // reduce level after 3 lost rounds
+    int correctCounter = 0; // increase level after 3 won rounds
 
     int totalWrongCounter; // for statistics
     int totalCorrectCounter = 0; // for statistics

@@ -80,14 +80,16 @@ void Tile::mousePressEvent(QMouseEvent *event)
         break;
     case OneToN::ModeTraining:
         if(app->state == OneToN::StateWait){
-            if(number == 1){
-                app->obscureTiles();
-                state = CheckedCorrect;
-                app->state = OneToN::StateGo;
-                app->correct();
-            }else{
-                state = CheckedWrong;
-                app->wrong();
+            if(number != 0){
+                if(number == 1){
+                    app->obscureTiles();
+                    state = CheckedCorrect;
+                    app->state = OneToN::StateGo;
+                    app->correct();
+                }else{
+                    state = CheckedWrong;
+                    app->wrong();
+                }
             }
         }
         else if(app->state == OneToN::StateGo){

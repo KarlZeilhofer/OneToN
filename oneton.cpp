@@ -67,6 +67,18 @@ OneToN::OneToN(QWidget *parent) :
     highScore = set.value("highScore").toInt();
     mode = GameMode(set.value("mode").toInt());
 
+    switch (mode) {
+    case OneToN::ModeIntro:
+        ui->actionModeIntro->setChecked(true);
+        break;
+    case OneToN::ModeTraining:
+        ui->actionModeTraining->setChecked(true);
+        break;
+    case OneToN::ModeChallange:
+        ui->actionModeChallange->setChecked(true);
+        break;
+    }
+
     newGame();
     showMaximized();
 }
@@ -87,6 +99,9 @@ void OneToN::newGame()
     fixedScore = 0;
     topLevel = 0;
     level = 2;
+
+    wrongCounter=0;
+    correctCounter=0;
 
     updateScore();
     newRound();
@@ -215,9 +230,13 @@ void OneToN::correct()
         if(counter > level){ // if clicked all numbers in this round
             QSound::play(":/sounds/success.wav");
             topLevel = level;
-            level++;
+            correctCounter++;
+            if(correctCounter >= 3){
+                correctCounter = 0;
+                level++;
+                wrongCounter=0;
+            }
             timerNewRound->start(2000);
-            wrongCounter=0;
             fixedScore = totalScore;
             state = StateWait;
         }else{
@@ -250,6 +269,7 @@ void OneToN::wrong()
         counter = 0;
 
         wrongCounter++;
+        correctCounter = 0;
         if(wrongCounter >=3 && level > 2){
             level--;
             wrongCounter=0;
