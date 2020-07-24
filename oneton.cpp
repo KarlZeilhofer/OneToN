@@ -5,6 +5,7 @@
 #include <QGridLayout>
 #include <QSettings>
 #include <QtMultimedia/QSound>
+#include <QDebug>
 
 OneToN* OneToN::app = 0;
 
@@ -22,6 +23,11 @@ OneToN::OneToN(QWidget *parent) :
     timerPreviewTiles = new QTimer(this);
     timerObscure = new QTimer(this);
     secondsTick = new QTimer(this);
+
+    timerSaveWindowRect = new QTimer(this);
+    timerSaveWindowRect->setSingleShot(true);
+    connect(timerSaveWindowRect, SIGNAL(timeout()),
+            this, SLOT(saveWindowRect()));
 
     mode = ModeChallange;
 
@@ -63,9 +69,12 @@ OneToN::OneToN(QWidget *parent) :
     secondsTick->start(1000);
     connect(secondsTick, SIGNAL(timeout()), this, SLOT(incrementGameTime()));
 
+    //connect(this, SIGNAL())
+
     QSettings set;
     highScore = set.value("highScore").toInt();
     mode = GameMode(set.value("mode").toInt());
+
 
     switch (mode) {
     case OneToN::ModeIntro:
@@ -80,12 +89,30 @@ OneToN::OneToN(QWidget *parent) :
     }
 
     newGame();
-    showMaximized();
+    setWindowTitle(QApplication::applicationName() + " - v" + QApplication::applicationVersion());
+
+    ui->actionFullscreen->setChecked(set.value("fullscreen").toBool());
+    QRect r = set.value("windowRect").toRect();
+    setGeometry(r);
+    move(r.topLeft());
+    on_actionFullscreen_triggered();
 }
 
 OneToN::~OneToN()
 {
     delete ui;
+}
+
+void OneToN::resizeEvent(QResizeEvent *event)
+{
+    timerSaveWindowRect->start(1000);
+    QWidget::resizeEvent(event);
+}
+
+void OneToN::moveEvent(QMoveEvent *event)
+{
+    timerSaveWindowRect->start(1000);
+    QWidget::moveEvent(event);
 }
 
 void OneToN::newGame()
@@ -239,7 +266,7 @@ void OneToN::correct()
             }
             timerNewRound->start(2000);
             fixedScore = totalScore;
-            state = StateWait;
+            state = StateSuccess;
         }else{
 
         }
@@ -345,4 +372,32 @@ void OneToN::saveMode()
 {
     QSettings set;
     set.setValue("mode", int(mode));
+}
+
+void OneToN::on_actionExit_triggered()
+{
+    QApplication::quit();
+}
+
+void OneToN::on_actionFullscreen_triggered()
+{
+    QSettings set;
+    if(ui->actionFullscreen->isChecked()){
+        set.setValue("fullscreen", true);
+        showFullScreen();
+    }else{
+        set.setValue("fullscreen", false);
+        showNormal();
+    }
+}
+
+void OneToN::saveWindowRect()
+{
+    QSettings set;
+    if(isFullScreen() == false){
+        QRect r = rect();
+        r.moveTo(pos());
+        set.setValue("windowRect", r);
+        qDebug()<<"windowRect saved";
+    }
 }

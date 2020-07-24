@@ -24,6 +24,10 @@ public:
     int level; // count of total tiles in current round
     int levelShown = 2;
 
+protected:
+    void resizeEvent(QResizeEvent *event);
+    void moveEvent(QMoveEvent *event);
+
 public slots:
     void newGame();
     void newRound();
@@ -65,6 +69,7 @@ public:
     QTimer* timerObscure;
     QLabel* scoreLabel;
     QTimer* secondsTick;
+    QTimer* timerSaveWindowRect;
 
     enum GameMode{ModeIntro, ModeTraining, ModeChallange};
     GameMode mode;
@@ -79,6 +84,9 @@ private slots:
     void on_actionNew_Game_triggered();
     void on_actionNew_Round_triggered();
     void saveMode();
+    void on_actionExit_triggered();
+    void on_actionFullscreen_triggered();
+    void saveWindowRect();
 };
 
 #endif // ONETON_H

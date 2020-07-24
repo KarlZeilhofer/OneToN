@@ -1,6 +1,14 @@
 Changelog 'One to N'
 ====================
 
+# V0.0.4
+* bugfix (multiple clicks on last tile)
+* improved style with rounded rects and dimmed colors
+* changed license to MIT
+* add fullscreen mode
+* store/restore window geometry (position, size)
+* windowtitle with version
+
 # V0.0.3
 * add menu bar
 * add game modes: Intro, Training and Challange

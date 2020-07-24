@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>571</width>
+    <width>869</width>
     <height>575</height>
    </rect>
   </property>
@@ -19,7 +19,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>571</width>
+     <width>869</width>
      <height>26</height>
     </rect>
    </property>
@@ -30,6 +30,8 @@
     <addaction name="actionModeIntro"/>
     <addaction name="actionModeTraining"/>
     <addaction name="actionModeChallange"/>
+    <addaction name="separator"/>
+    <addaction name="actionFullscreen"/>
    </widget>
    <widget class="QMenu" name="menuGame">
     <property name="title">
@@ -38,6 +40,7 @@
     <addaction name="actionNew_Game"/>
     <addaction name="actionNew_Round"/>
     <addaction name="actionPause"/>
+    <addaction name="actionExit"/>
    </widget>
    <addaction name="menuGame"/>
    <addaction name="menuGame_Mode"/>
@@ -91,12 +94,28 @@
     <string>New Round</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+R</string>
+    <string>Space</string>
    </property>
   </action>
   <action name="actionPause">
    <property name="text">
     <string>Pause</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionFullscreen">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fullscreen</string>
+   </property>
+   <property name="shortcut">
+    <string>F11</string>
    </property>
   </action>
  </widget>
